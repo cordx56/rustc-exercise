@@ -9,9 +9,14 @@ impl rustc_driver::Callbacks for MyRustc {
     fn after_analysis<'tcx>(
         &mut self,
         _compiler: &rustc_interface::interface::Compiler,
-        _tcx: rustc_middle::ty::TyCtxt<'tcx>,
+        tcx: rustc_middle::ty::TyCtxt<'tcx>,
     ) -> rustc_driver::Compilation {
-        println!("analyze finished!");
+        for def_id in tcx.hir_crate_items(()).definitions() {
+            let node = tcx.hir_node_by_def_id(def_id);
+            if let Some(ident) = node.ident() {
+                println!("{}", ident);
+            }
+        }
         rustc_driver::Compilation::Continue
     }
 }
