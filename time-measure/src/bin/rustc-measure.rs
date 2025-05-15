@@ -5,9 +5,6 @@ use std::process::{Command, Stdio};
 use time_measure::*;
 
 fn main() {
-    let mut typeck = HashMap::new();
-    let mut borrowck = HashMap::new();
-
     let output = Command::new("cargo")
         .args(["build"])
         .env("RUSTC", canonicalize(env::args().nth(1).unwrap()).unwrap())
@@ -18,6 +15,9 @@ fn main() {
         .unwrap()
         .stdout;
     let output = String::from_utf8(output).unwrap();
+
+    let mut typeck = HashMap::new();
+    let mut borrowck = HashMap::new();
     for line in output.lines() {
         if let Ok(measure) = serde_json::from_str::<TimeMeasure>(line) {
             match measure {
